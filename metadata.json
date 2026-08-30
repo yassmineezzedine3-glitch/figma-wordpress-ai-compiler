@@ -1,0 +1,8 @@
+{
+  "name": "Figma to WordPress Compiler",
+  "description": "Clean minimalist compiler that transforms Figma JSON documents and AutoLayout tokens into semantic AST intermediate representations, enriched by Claude AI, generating production-ready WordPress themes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

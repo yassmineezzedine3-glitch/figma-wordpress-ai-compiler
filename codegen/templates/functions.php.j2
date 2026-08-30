@@ -1,0 +1,128 @@
+<?php
+/**
+ * {{ theme_name | default('Figma Theme') }} functions and definitions
+ *
+ * @link https://developer.wordpress.org/themes/basics/theme-functions/
+ *
+ * @package {{ theme_slug | default('figma-theme') }}
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly.
+}
+
+if ( ! function_exists( '{{ function_prefix }}_setup' ) ) :
+    /**
+     * Sets up theme defaults and registers support for various WordPress features.
+     */
+    function {{ function_prefix }}_setup() {
+        // Add default posts and comments RSS feed links to head.
+        add_theme_support( 'automatic-feed-links' );
+
+        /*
+         * Let WordPress manage the document title.
+         * By adding theme support, we declare that this theme does not use a
+         * hard-coded <title> tag in the document head, and expect WordPress to
+         * provide it for us.
+         */
+        add_theme_support( 'title-tag' );
+
+        /*
+         * Enable support for Post Thumbnails on posts and pages.
+         *
+         * @link https://developer.wordpress.org/themes/functionality/featured-images-post-thumbnails/
+         */
+        add_theme_support( 'post-thumbnails' );
+
+        // Set default thumbnail size.
+        set_post_thumbnail_size( 1200, 9999 );
+
+        // This theme uses wp_nav_menu() in primary location.
+        register_nav_menus(
+            array(
+                'primary' => esc_html__( 'Primary Menu', '{{ theme_slug }}' ),
+                'footer'  => esc_html__( 'Footer Menu', '{{ theme_slug }}' ),
+            )
+        );
+
+        /*
+         * Switch default core markup for search form, comment form, and comments
+         * to output valid HTML5.
+         */
+        add_theme_support(
+            'html5',
+            array(
+                'search-form',
+                'comment-form',
+                'comment-list',
+                'gallery',
+                'caption',
+                'style',
+                'script',
+            )
+        );
+
+        // Add theme support for selective refresh for widgets.
+        add_theme_support( 'customize-selective-refresh-widgets' );
+
+        // Add support for responsive embedded content.
+        add_theme_support( 'responsive-embeds' );
+
+        // Add support for editor styles.
+        add_theme_support( 'editor-styles' );
+    }
+endif;
+add_action( 'after_setup_theme', '{{ function_prefix }}_setup' );
+
+/**
+ * Enqueue scripts and styles.
+ */
+function {{ function_prefix }}_scripts() {
+    wp_enqueue_style( '{{ theme_slug }}-style', get_stylesheet_uri(), array(), '{{ theme_version | default("1.0.0") }}' );
+}
+add_action( 'wp_enqueue_scripts', '{{ function_prefix }}_scripts' );
+
+{% if custom_post_types %}
+/**
+ * Register Custom Post Types identified in AST hierarchy.
+ */
+function {{ function_prefix }}_register_custom_post_types() {
+{% for cpt in custom_post_types %}
+    $labels_{{ cpt.slug | replace("-", "_") }} = array(
+        'name'                  => _x( '{{ cpt.plural_name }}', 'Post type general name', '{{ theme_slug }}' ),
+        'singular_name'         => _x( '{{ cpt.singular_name }}', 'Post type singular name', '{{ theme_slug }}' ),
+        'menu_name'             => _x( '{{ cpt.plural_name }}', 'Admin Menu text', '{{ theme_slug }}' ),
+        'name_admin_bar'        => _x( '{{ cpt.singular_name }}', 'Add New on Toolbar', '{{ theme_slug }}' ),
+        'add_new'               => __( 'Add New', '{{ theme_slug }}' ),
+        'add_new_item'          => __( 'Add New {{ cpt.singular_name }}', '{{ theme_slug }}' ),
+        'new_item'              => __( 'New {{ cpt.singular_name }}', '{{ theme_slug }}' ),
+        'edit_item'             => __( 'Edit {{ cpt.singular_name }}', '{{ theme_slug }}' ),
+        'view_item'             => __( 'View {{ cpt.singular_name }}', '{{ theme_slug }}' ),
+        'all_items'             => __( 'All {{ cpt.plural_name }}', '{{ theme_slug }}' ),
+        'search_items'          => __( 'Search {{ cpt.plural_name }}', '{{ theme_slug }}' ),
+        'not_found'             => __( 'No {{ cpt.plural_name | lower }} found.', '{{ theme_slug }}' ),
+        'not_found_in_trash'    => __( 'No {{ cpt.plural_name | lower }} found in Trash.', '{{ theme_slug }}' ),
+    );
+
+    $args_{{ cpt.slug | replace("-", "_") }} = array(
+        'labels'             => $labels_{{ cpt.slug | replace("-", "_") }},
+        'public'             => {{ "true" if cpt.public else "false" }},
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            => array( 'slug' => '{{ cpt.slug }}' ),
+        'capability_type'    => 'post',
+        'has_archive'        => {{ "true" if cpt.has_archive else "false" }},
+        'hierarchical'       => false,
+        'menu_position'      => {{ cpt.menu_position | default(20) }},
+        'menu_icon'          => '{{ cpt.menu_icon | default("dashicons-admin-post") }}',
+        'supports'           => array( {% for s in cpt.supports %}'{{ s }}'{% if not loop.last %}, {% endif %}{% endfor %} ),
+        'show_in_rest'       => true,
+    );
+
+    register_post_type( '{{ cpt.slug }}', $args_{{ cpt.slug | replace("-", "_") }} );
+{% endfor %}
+}
+add_action( 'init', '{{ function_prefix }}_register_custom_post_types' );
+{% endif %}

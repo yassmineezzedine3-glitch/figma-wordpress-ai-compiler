@@ -1,0 +1,18 @@
+<?php
+/**
+ * The Home Page template
+ *
+ * Displays the AST-derived layout directly for WordPress homepage requests.
+ *
+ * @package {{ theme_slug | default('figma-theme') }}
+ */
+
+get_header();
+?>
+
+<main id="primary" class="site-main {{ main_class | default('site-home-page') }} bg-slate-950 text-slate-100 min-h-screen">
+{{ body_content }}
+</main><!-- #primary -->
+
+<?php
+get_footer();

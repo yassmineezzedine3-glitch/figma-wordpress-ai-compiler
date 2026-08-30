@@ -1,0 +1,17 @@
+<?php
+/**
+ * Template Name: {{ template_name | default('Figma Generated Page Template') }}
+ * Description: Clean WordPress page template generated from AST intermediate representation.
+ *
+ * @package {{ theme_slug | default('figma-theme') }}
+ */
+
+get_header();
+?>
+
+<main id="primary" class="site-main {{ main_class | default('page-container') }}">
+{{ body_content }}
+</main><!-- #primary -->
+
+<?php
+get_footer();
